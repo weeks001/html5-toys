@@ -37,14 +37,16 @@ class Spirograph {
         this.hue = hue;
     }
     interpolate(spirograph, s) {
+        // console.log(this.hue);
         return new Spirograph(
             this.inner.interpolate(spirograph.inner, s),
             this.outer.interpolate(spirograph.outer, s),
             this.point.interpolate(spirograph.point, s),
             lerp(this.step, spirograph.step, s),
             lerp(this.second, spirograph.second, s),
-            lerp(this.hue, spirograph.hue, s)
+            this.hue
         );
+        //lerp(this.hue, spirograph.hue, s)
     }
 }
 
@@ -67,20 +69,18 @@ class LerpySpirograph {
             new Vector(0,0), 
             1, 
             -1000, 
-            160
+            randomHue
         );
         this.nextState = this.lastState;
         this.sizeFactor = sizeFactor;
         this.randomHue = randomHue;
+        console.log(this.randomHue + ", " + this.lastState.hue);
     }
     draw() {
         let duration = 10;
         let time = (new Date().getTime() - start) / 1000;
         let s = (time - this.lastState.second) / duration;
         let x = this.lastState.interpolate(this.nextState, Math.sin(Math.min(s, 1)* Math.PI/2));
-        // x.inner.radius = Math.floor(x.inner.radius);
-        // x.outer.radius = Math.floor(x.outer.radius);
-        // x.iterations = Math.floor(x.iterations);
 
         if (s >= 1) {
             this.lastState = x;
@@ -91,20 +91,17 @@ class LerpySpirograph {
                 new Vector(lerp(0.1, 2, Math.random()), lerp(0.1, 2, Math.random())),
                 Math.pow(10, lerp(-2.0, 0, Math.random())),
                 Math.floor(time),
-                this.randomHue()
+                this.randomHue
             );
-            // loopRadians = 100 / this.nextState.step;
         } 
-        // let maxAngle = LCM(x.inner.radius, x.outer.radius) / Math.max(Math.abs(x.outer.radius-x.inner.radius),1); 
-        // console.log(LCM(1, 5));
+        // console.log(this.randomHue);
+        // console.log(x.hue);
         let maxAngle = 1000;
-
-        // iterations is a lie, it's actually the step right
         drawSpirograph(x.inner, x.outer, x.point, x.step, 100 / x.step, x.hue);
     }
 }
 
-function shuffleArray(array) {
+function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
         let temp = array[i];
@@ -119,7 +116,7 @@ class Palette {
         this.colors = colors;
     }
     getColors(n) {
-        shuffleArray(this.colors);
+        shuffle(this.colors);
         let colorSet = [];
         for (let i = 0; i < n; i++) {
             colorSet.push(this.colors[i]);
@@ -131,21 +128,24 @@ class Palette {
 var c = document.getElementById("myCanvas");
 var delay = 20;
 var start = new Date().getTime(); 
-var outer = new Circle(new Vector(c.width/2,c.height/2), 200, 0);
-var inner = new Circle(new Vector(0,0), 50, 0);
-var point = new Vector(1,1);
-var points = [];
 var palettes = [];
 
+// For other draw funcions
+// var outer = new Circle(new Vector(c.width/2,c.height/2), 200, 0);
+// var inner = new Circle(new Vector(0,0), 50, 0);
+// var point = new Vector(1,1);
+// var points = [];
+// var loopRadians = 500;
+
 // PRETTY COLORS~~ :D
-// palettes.push(new Palette("Honey Pot", ['#105b63', '#fffad5', '#ffd34e', '#db9e36', '#bd4932']));
-// palettes.push(new Palette("Aspirin C", ['#225378', '#1695A3', '#ACF0F2', '#F3FFE2', '#EB7F00']));
-// palettes.push(new Palette("Flat UI", ['#2C3E50', '#E74C3C', '#ECF0F1', '#3498DB', '#2980B9']));
-// palettes.push(new Palette("Vitamin C", ['#004358', '#1F8A70', '#BEDB39', '#FFE11A', '#FD7400']));
-// palettes.push(new Palette("Sea Wolf", ['#DC3522', '#D9CB9E', '#374140', '#2A2C2B', '#1E1E20']));
-// palettes.push(new Palette("Cherry Cheesecake", ['#B9121B', '#4C1B1B', '#F6E497', '#FCFAE1', '#BD8D46']));
-// palettes.push(new Palette("CS04", ['#F6F792', '#333745', '#77C4D3', '#DAEDE2', '#EA2E49']));
-// palettes.push(new Palette("Friends and Foes", ['#2F2933', '#01A2A6', '#29D9C2', '#BDF271', '#FFFFA6']));
+palettes.push(new Palette("Honey Pot", ['#105b63', '#fffad5', '#ffd34e', '#db9e36', '#bd4932']));
+palettes.push(new Palette("Aspirin C", ['#225378', '#1695A3', '#ACF0F2', '#F3FFE2', '#EB7F00']));
+palettes.push(new Palette("Flat UI", ['#2C3E50', '#E74C3C', '#ECF0F1', '#3498DB', '#2980B9']));
+palettes.push(new Palette("Vitamin C", ['#004358', '#1F8A70', '#BEDB39', '#FFE11A', '#FD7400']));
+palettes.push(new Palette("Sea Wolf", ['#DC3522', '#D9CB9E', '#374140', '#2A2C2B', '#1E1E20']));
+palettes.push(new Palette("Cherry Cheesecake", ['#B9121B', '#4C1B1B', '#F6E497', '#FCFAE1', '#BD8D46']));
+palettes.push(new Palette("CS04", ['#F6F792', '#333745', '#77C4D3', '#DAEDE2', '#EA2E49']));
+palettes.push(new Palette("Friends and Foes", ['#2F2933', '#01A2A6', '#29D9C2', '#BDF271', '#FFFFA6']));
 // palettes.push(new Palette("Pear Lemon Fizz", ['#', '#', '#', '#', '#']));
 // palettes.push(new Palette("Ocean Sunset", ['#', '#', '#', '#', '#']));
 // palettes.push(new Palette("Cote Azur", ['#', '#', '#', '#', '#']));
@@ -153,9 +153,7 @@ var palettes = [];
 // palettes.push(new Palette("Flat Design Colors 1", ['#', '#', '#', '#', '#']));
 
 
-// var loopRadians = (outer.circumference * inner.circumference / (2 * Math.PI * (outer.radius - inner.radius))) * 2 * Math.PI;
-var loopRadians = 500;
-
+// Live redraw of spirograph
 function redraw() {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -194,7 +192,7 @@ function redraw() {
     ctx.stroke();    
 }
 
-
+//Draw given spirograph
 function drawSpirograph(inner, outer, point, step, iterations, hue) {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -212,11 +210,12 @@ function drawSpirograph(inner, outer, point, step, iterations, hue) {
             ctx.lineTo(gPoint.u, gPoint.v);
         }  
     }
-    ctx.strokeStyle = 'hsl(' + hue + ', 100%, 80%)';
-    // ctx.strokeStyle = hue;
+    // ctx.strokeStyle = 'hsl(' + hue + ', 100%, 80%)';
+    ctx.strokeStyle = hue;
     ctx.stroke();
 }
-
+ 
+ //Draw a specfic spirograph over a given number of iterations
 function drawPattern() {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -243,17 +242,18 @@ function clear() {
 
 }
 
-// let currentPalette = palettes[Math.floor(lerp(0, palettes.length, Math.random()))];
-// let chosenColors = currentPalette.getColors(3);
+let currentPalette = palettes[Math.floor(lerp(0, palettes.length, Math.random()))];
+let chosenColors = currentPalette.getColors(3);
 
-var spiro1 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 0.5, () => lerp(0, 60, Math.random()));
-var spiro2 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 1, () => lerp(60, 180, Math.random()));
-var spiro3 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 2, () => lerp(180, 240, Math.random()));
+// var spiro1 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 0.5, () => lerp(0, 60, Math.random()));
+// var spiro2 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 1, () => lerp(60, 180, Math.random()));
+// var spiro3 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 2, () => lerp(180, 240, Math.random()));
 
-// var spiro1 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 0.5, chosenColors[0]);
-// var spiro2 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 1, chosenColors[1]);
-// var spiro3 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 2, chosenColors[2]);
-// console.log(chosenColors[0] + ", " + chosenColors[1] + ", " + chosenColors[2]);
+var spiro1 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 0.5, chosenColors[0]);
+var spiro2 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 1, chosenColors[1]);
+var spiro3 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 2, chosenColors[2]);
+console.log(chosenColors[0] + ", " + chosenColors[1] + ", " + chosenColors[2]);
+console.log(spiro1.randomHue);
 
 setInterval(() => {
     clear();
