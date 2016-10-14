@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script language="JavaScript" type="text/javascript" src="jquery.js"></script>
+    <style type="text/css">
+        html {
+            background-color: black;
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="1000" height="800">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script type="text/javascript">
+    $('#myCanvas').attr('width', $(window).width());
+    $('#myCanvas').attr('height', $(window).height());
+</script>
+
+<script language="JavaScript" type="text/javascript" src="frames.js"></script>
+<script language="JavaScript" type="text/javascript" src="circles.js"></script>
+<!-- <script language="JavaScript" type="text/javascript" src="particles.js"></script> -->
+
+</body>
+</html>
