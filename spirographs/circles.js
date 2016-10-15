@@ -44,7 +44,7 @@ class Spirograph {
             this.point.interpolate(spirograph.point, s),
             lerp(this.step, spirograph.step, s),
             lerp(this.second, spirograph.second, s),
-            this.hue
+            this.hue.interpolate(spirograph.hue, s)
         );
         //lerp(this.hue, spirograph.hue, s)
     }
@@ -69,12 +69,11 @@ class LerpySpirograph {
             new Vector(0,0), 
             1, 
             -1000, 
-            randomHue
+            new Color(0,0,0)
         );
         this.nextState = this.lastState;
         this.sizeFactor = sizeFactor;
         this.randomHue = randomHue;
-        console.log(this.randomHue + ", " + this.lastState.hue);
     }
     draw() {
         let duration = 10;
@@ -91,7 +90,7 @@ class LerpySpirograph {
                 new Vector(lerp(0.1, 2, Math.random()), lerp(0.1, 2, Math.random())),
                 Math.pow(10, lerp(-2.0, 0, Math.random())),
                 Math.floor(time),
-                this.randomHue
+                this.randomHue()
             );
         } 
         // console.log(this.randomHue);
@@ -125,10 +124,55 @@ class Palette {
     }
 }
 
+class PaletteMaster {
+    constructor() {
+        this.buffers = [ [], [], [] ];
+        this.palettes = [
+            // new Palette("Honey Pot", [new Color(16, 91, 99), new Color(255, 250, 213), new Color(255, 211, 78), new Color(219, 158, 54), new Color(189, 73, 50)]),
+            new Palette("Aspirin C", [new Color(34, 83, 120), new Color(22, 149, 163), new Color(172, 240, 242), new Color(243, 255, 226), new Color(235, 127, 0)]),
+            new Palette("Granny Smith Apple", [new Color(133, 219, 24), new Color(205,232,85), new Color(245,246,212), new Color(167,197,32), new Color(73,63,11)])
+        ];
+    }
+    addPalette() {
+        let palette = this.randomPalette().slice(0);
+        for (let i = 0; i < this.buffers.length; i++){
+            this.buffers[i].push(palette.pop(Math.floor((Math.random() * palette.length))));
+        }
+    }
+    randomPalette() {
+        return this.palettes[Math.floor(this.palettes.length * Math.random())].colors; 
+    }
+    getColor(i){
+        if (this.buffers[i].length == 0) {
+            this.addPalette();
+        }
+        return this.buffers[i].pop(0);
+    }
+}
+
+class Color {
+    constructor(r, g, b) {
+        this.r = Math.floor(r);
+        this.g = Math.floor(g);
+        this.b = Math.floor(b);
+    }
+    interpolate(color, s) {
+        return new Color(
+            lerp(this.r, color.r, s),
+            lerp(this.g, color.g, s),
+            lerp(this.b, color.b, s)
+        );
+    }
+    get string() {
+        return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
+    }
+}
+
 var c = document.getElementById("myCanvas");
 var delay = 20;
 var start = new Date().getTime(); 
 var palettes = [];
+var pm = new PaletteMaster();
 
 // For other draw funcions
 // var outer = new Circle(new Vector(c.width/2,c.height/2), 200, 0);
@@ -138,20 +182,22 @@ var palettes = [];
 // var loopRadians = 500;
 
 // PRETTY COLORS~~ :D
-palettes.push(new Palette("Honey Pot", ['#105b63', '#fffad5', '#ffd34e', '#db9e36', '#bd4932']));
-palettes.push(new Palette("Aspirin C", ['#225378', '#1695A3', '#ACF0F2', '#F3FFE2', '#EB7F00']));
-palettes.push(new Palette("Flat UI", ['#2C3E50', '#E74C3C', '#ECF0F1', '#3498DB', '#2980B9']));
-palettes.push(new Palette("Vitamin C", ['#004358', '#1F8A70', '#BEDB39', '#FFE11A', '#FD7400']));
-palettes.push(new Palette("Sea Wolf", ['#DC3522', '#D9CB9E', '#374140', '#2A2C2B', '#1E1E20']));
-palettes.push(new Palette("Cherry Cheesecake", ['#B9121B', '#4C1B1B', '#F6E497', '#FCFAE1', '#BD8D46']));
-palettes.push(new Palette("CS04", ['#F6F792', '#333745', '#77C4D3', '#DAEDE2', '#EA2E49']));
-palettes.push(new Palette("Friends and Foes", ['#2F2933', '#01A2A6', '#29D9C2', '#BDF271', '#FFFFA6']));
+// palettes.push(new Palette("Honey Pot", ['#105b63', '#fffad5', '#ffd34e', '#db9e36', '#bd4932']));
+// palettes.push(new Palette("Aspirin C", ['#225378', '#1695A3', '#ACF0F2', '#F3FFE2', '#EB7F00']));
+// palettes.push(new Palette("Flat UI", ['#2C3E50', '#E74C3C', '#ECF0F1', '#3498DB', '#2980B9']));
+// palettes.push(new Palette("Vitamin C", ['#004358', '#1F8A70', '#BEDB39', '#FFE11A', '#FD7400']));
+// palettes.push(new Palette("Sea Wolf", ['#DC3522', '#D9CB9E', '#374140', '#2A2C2B', '#1E1E20']));
+// palettes.push(new Palette("Cherry Cheesecake", ['#B9121B', '#4C1B1B', '#F6E497', '#FCFAE1', '#BD8D46']));
+// palettes.push(new Palette("CS04", ['#F6F792', '#333745', '#77C4D3', '#DAEDE2', '#EA2E49']));
+// palettes.push(new Palette("Friends and Foes", ['#2F2933', '#01A2A6', '#29D9C2', '#BDF271', '#FFFFA6']));
 // palettes.push(new Palette("Pear Lemon Fizz", ['#', '#', '#', '#', '#']));
 // palettes.push(new Palette("Ocean Sunset", ['#', '#', '#', '#', '#']));
 // palettes.push(new Palette("Cote Azur", ['#', '#', '#', '#', '#']));
 // palettes.push(new Palette("Ventana Azul", ['#', '#', '#', '#', '#']));
 // palettes.push(new Palette("Flat Design Colors 1", ['#', '#', '#', '#', '#']));
 
+// palettes.push(new Palette("Honey Pot", [new Color(16, 91, 99), new Color(255, 250, 213), new Color(255, 211, 78), new Color(219, 158, 54), new Color(189, 73, 50)]));
+// palettes.push(new Palette("Aspirin C", [new Color(34, 83, 120), new Color(22, 149, 163), new Color(172, 240, 242), new Color(243, 255, 226), new Color(235, 127, 0)]));
 
 // Live redraw of spirograph
 function redraw() {
@@ -211,7 +257,7 @@ function drawSpirograph(inner, outer, point, step, iterations, hue) {
         }  
     }
     // ctx.strokeStyle = 'hsl(' + hue + ', 100%, 80%)';
-    ctx.strokeStyle = hue;
+    ctx.strokeStyle = hue.string;
     ctx.stroke();
 }
  
@@ -242,20 +288,22 @@ function clear() {
 
 }
 
-let currentPalette = palettes[Math.floor(lerp(0, palettes.length, Math.random()))];
-let chosenColors = currentPalette.getColors(3);
+// let currentPalette = palettes[Math.floor(lerp(0, palettes.length, Math.random()))];
+// let chosenColors = currentPalette.getColors(3);
 
 // var spiro1 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 0.5, () => lerp(0, 60, Math.random()));
 // var spiro2 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 1, () => lerp(60, 180, Math.random()));
 // var spiro3 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 2, () => lerp(180, 240, Math.random()));
 
-var spiro1 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 0.5, chosenColors[0]);
-var spiro2 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 1, chosenColors[1]);
-var spiro3 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 2, chosenColors[2]);
-console.log(chosenColors[0] + ", " + chosenColors[1] + ", " + chosenColors[2]);
-console.log(spiro1.randomHue);
+var spiro1 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 0.5, () => pm.getColor(0));
+var spiro2 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 1, () => pm.getColor(1));
+var spiro3 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 2, () => pm.getColor(2));
+// console.log(chosenColors[0] + ", " + chosenColors[1] + ", " + chosenColors[2]);
+// console.log(spiro1.randomHue);
 
 setInterval(() => {
+    // let chosenColors = palettes[Math.floor(lerp(0, palettes.length, Math.random()))].getColors(3);
+    // console.log(chosenColors[0].string + ", " + chosenColors[1].string + ", " + chosenColors[2].string);
     clear();
     spiro1.draw();
     spiro2.draw();
