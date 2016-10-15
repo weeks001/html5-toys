@@ -109,6 +109,10 @@ function shuffle(array) {
     }
 }
 
+Array.prototype.pop = function(index) {
+    return this.splice(index, 1)[0];
+};
+
 class Palette {
     constructor(name, colors) {
         this.name = name;
@@ -129,8 +133,8 @@ class PaletteMaster {
         this.buffers = [ [], [], [] ];
         this.palettes = [
             // new Palette("Honey Pot", [new Color(16, 91, 99), new Color(255, 250, 213), new Color(255, 211, 78), new Color(219, 158, 54), new Color(189, 73, 50)]),
-            new Palette("Aspirin C", [new Color(34, 83, 120), new Color(22, 149, 163), new Color(172, 240, 242), new Color(243, 255, 226), new Color(235, 127, 0)]),
-            new Palette("Granny Smith Apple", [new Color(133, 219, 24), new Color(205,232,85), new Color(245,246,212), new Color(167,197,32), new Color(73,63,11)])
+            new Palette("Aspirin C", [HSB(206,72,47), HSB(186,87,64), HSB(182,29,95), HSB(85,11,100), HSB(32,100,92)]),
+            new Palette("Granny Smith Apple", [HSB(86,89,86), HSB(71,63,91), HSB(62,14,96), HSB(71,84,77), HSB(50,85,29)])
         ];
     }
     addPalette() {
@@ -150,6 +154,15 @@ class PaletteMaster {
     }
 }
 
+function HSB(h, s, b) {
+    s = s / 100.0;
+    b = b / 100.0;
+    let l =  0.5 * b * (2 - s);
+    let newS = b*s / (1 - Math.abs(2 * l - 1));
+    console.log(l + ", " + b*s / (1 - Math.abs(2 * l - 1)));
+    return new Color(h, newS*100, l*100);
+} 
+
 class Color {
     constructor(r, g, b) {
         this.r = Math.floor(r);
@@ -164,7 +177,7 @@ class Color {
         );
     }
     get string() {
-        return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
+        return "hsl(" + this.r + "," + this.g + "%," + this.b + "%)";
     }
 }
 
@@ -180,6 +193,7 @@ var pm = new PaletteMaster();
 // var point = new Vector(1,1);
 // var points = [];
 // var loopRadians = 500;
+
 
 // PRETTY COLORS~~ :D
 // palettes.push(new Palette("Honey Pot", ['#105b63', '#fffad5', '#ffd34e', '#db9e36', '#bd4932']));
@@ -198,6 +212,8 @@ var pm = new PaletteMaster();
 
 // palettes.push(new Palette("Honey Pot", [new Color(16, 91, 99), new Color(255, 250, 213), new Color(255, 211, 78), new Color(219, 158, 54), new Color(189, 73, 50)]));
 // palettes.push(new Palette("Aspirin C", [new Color(34, 83, 120), new Color(22, 149, 163), new Color(172, 240, 242), new Color(243, 255, 226), new Color(235, 127, 0)]));
+// new Palette("Granny Smith Apple", [new Color(133, 219, 24), new Color(205,232,85), new Color(245,246,212), new Color(167,197,32), new Color(73,63,11)])
+
 
 // Live redraw of spirograph
 function redraw() {
@@ -258,7 +274,9 @@ function drawSpirograph(inner, outer, point, step, iterations, hue) {
     }
     // ctx.strokeStyle = 'hsl(' + hue + ', 100%, 80%)';
     ctx.strokeStyle = hue.string;
+
     ctx.stroke();
+    ctx.closePath();
 }
  
  //Draw a specfic spirograph over a given number of iterations
@@ -288,6 +306,20 @@ function clear() {
 
 }
 
+function drawPalettes() {
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    pm.palettes.forEach((p,i) => {
+        p.colors.forEach((c,j) => {
+            ctx.beginPath();
+            ctx.rect(50 * j,50 * i,50,50);
+            ctx.fillStyle = c.string;
+            ctx.fill();
+            ctx.closePath();
+        });
+    });
+}
+
 // let currentPalette = palettes[Math.floor(lerp(0, palettes.length, Math.random()))];
 // let chosenColors = currentPalette.getColors(3);
 
@@ -302,11 +334,10 @@ var spiro3 = new LerpySpirograph(new Vector(c.width * 3/4, c.height/2), 2, () =>
 // console.log(spiro1.randomHue);
 
 setInterval(() => {
-    // let chosenColors = palettes[Math.floor(lerp(0, palettes.length, Math.random()))].getColors(3);
-    // console.log(chosenColors[0].string + ", " + chosenColors[1].string + ", " + chosenColors[2].string);
     clear();
     spiro1.draw();
     spiro2.draw();
     spiro3.draw();
+    drawPalettes();
 }, delay);
 
