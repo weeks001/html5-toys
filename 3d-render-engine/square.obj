@@ -1,0 +1,12 @@
+# Anything following a '#' should be ignored.
+# Vertices start with 'v' and are followed by their x y z coordinates.
+# Faces start with 'f' and are followed by the indices of their vertices.
+# s 0.1
+
+v  1  0  1  # 0 LT (left bottom back)
+v  1  0 -1  # 1 LB (right bottom back)
+v -1  0 -1  # 2 RB (left top back)
+v -1  0  1  # 3 RT (right top back)
+
+
+f 1 2 3 4 # square face
