@@ -19,3 +19,13 @@ three spirographs, lots of linear interpolations, random numbers and pretty colo
 make a really mesmerizing animation!
 
 ![Spirograph screenshot](screenshots/spirographs.png)
+
+## 3D Rendering Engine
+
+This was made as an excuse to play with more complicated animations than the 
+spirographs. It is capable of reading the basic .obj file format and rendering 
+meshes. The renderer is designed similar to basic game engines so that animation 
+effects are easy to create and update. Meshes can be rendered in orthographic and 
+perspective mode by toggling the camera with 'c'. The camera can be moved with WASD. 
+
+![3D Render Engine screenshot](screenshots/3drendering1.png)
