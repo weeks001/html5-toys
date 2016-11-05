@@ -7,8 +7,8 @@ function drawScene(gameObjects) {
 
 
 // Run python -m SimpleHTTPServer first.
-$.get("/html5-toys/stanfordbunny.obj").then(function(data1) {
-    $.get("/html5-toys/square.obj").then(function(data2) {
+$.get("/html5-toys/3d-render-engine/stanfordbunny.obj").then(function(data1) {
+    $.get("/html5-toys/3d-render-engine/square.obj").then(function(data2) {
         let mesh1 = Mesh.parse(data1);
         mesh1.frame = new Frame(
         new Vector(0, 0.4, 0),
